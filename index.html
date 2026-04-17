@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>대전해든학교 고1-2반 아침 대시보드</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; background: #dde8ff; }
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    min-height: 100vh;
+    background: linear-gradient(160deg, #dde8ff 0%, #f4f6fb 55%, #d9f0e5 100%);
+    padding: 18px 0 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .wrap {
+    width: 100%;
+    max-width: 1000px;
+    padding: 0 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  @media (max-width: 500px) {
+    .wrap { padding: 0 16px; }
+  }
+
+  /* 헤더 */
+  .header {
+    text-align: center;
+    padding: 16px 20px 14px;
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 2px 14px rgba(66,133,244,0.10);
+    border: 1.5px solid #E8EAED;
+  }
+  .school-name { font-size: 15px; color: #5F6368; font-weight: 500; letter-spacing: 1.5px; }
+  .class-name { font-size: 28px; color: #1a73e8; font-weight: 900; margin-top: 2px; letter-spacing: -0.5px; }
+
+  /* 인사 배너 */
+  .greeting-badge {
+    text-align: center;
+    background: linear-gradient(90deg, #1a73e8 0%, #34A853 100%);
+    border-radius: 18px;
+    padding: 12px;
+    color: white;
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    box-shadow: 0 3px 12px rgba(26,115,232,0.25);
+  }
+
+  /* 날짜+시간+일정 그리드 */
+  .grid-top { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; align-items: stretch; }
+
+  .card {
+    background: white;
+    border-radius: 22px;
+    padding: 18px 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    border: 1.5px solid #E8EAED;
+  }
+  .card-label-sm { font-size: 13px; color: #5F6368; font-weight: 700; letter-spacing: 0.8px; margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
+  .card-label {
+    font-size: 13px; color: #5F6368; font-weight: 700;
+    letter-spacing: 0.8px; margin-bottom: 8px;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .date-text { font-size: 25px; font-weight: 900; color: #202124; line-height: 1.15; }
+  .day-text { font-size: 21px; color: #1a73e8; font-weight: 700; margin-top: 4px; }
+  .time-text { font-size: 50px; font-weight: 900; color: #202124; letter-spacing: -2px; line-height: 1; }
+  .time-sec { font-size: 24px; color: #9AA0A6; font-weight: 400; letter-spacing: 0; }
+
+  /* 날씨+미세먼지 */
+  .weather-dust-card {
+    background: white;
+    border-radius: 22px;
+    padding: 18px 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    border: 1.5px solid #E8EAED;
+  }
+  .weather-row { display: flex; align-items: center; gap: 12px; }
+  .weather-icon { font-size: 42px; line-height: 1; flex-shrink: 0; }
+  .weather-temp { font-size: 34px; font-weight: 900; color: #202124; }
+  .weather-desc { font-size: 16px; color: #5F6368; font-weight: 500; margin-top: 1px; }
+  .weather-sub { font-size: 13px; color: #9AA0A6; margin-top: 3px; }
+  .dust-row {
+    display: flex; gap: 8px;
+    border-top: 1px solid #F1F3F4;
+    padding-top: 12px;
+    margin-top: 2px;
+  }
+  .dust-box { flex: 1; text-align: center; padding: 9px 6px; border-radius: 14px; }
+  .dust-box-label { font-size: 11px; color: #5F6368; font-weight: 700; margin-bottom: 3px; letter-spacing: 0.3px; }
+  .dust-box-val { font-size: 22px; font-weight: 900; }
+  .dust-box-unit { font-size: 11px; color: #9AA0A6; margin-top: 1px; }
+  .dust-box-status { font-size: 13px; font-weight: 700; margin-top: 2px; }
+  .bg-good{background:#E8F5E9;} .bg-normal{background:#E3F2FD;} .bg-bad{background:#FFF3E0;} .bg-vbad{background:#FCE4EC;}
+  .c-good{color:#2E7D32;} .c-normal{color:#1565C0;} .c-bad{color:#E65100;} .c-vbad{color:#880E4F;}
+  .weather-src { font-size: 11px; color: #BDC1C6; text-align: right; margin-top: 6px; }
+
+  /* 급식 */
+  .meal-card {
+    background: white; border-radius: 22px; padding: 18px 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07); border: 1.5px solid #E8EAED;
+  }
+  .meal-list { list-style: none; margin-top: 6px; }
+  .meal-list li {
+    font-size: 18px; color: #202124; padding: 6px 0;
+    border-bottom: 1px solid #F1F3F4; font-weight: 500;
+  }
+  .meal-list li:last-child { border-bottom: none; }
+  .meal-cal { font-size: 12px; color: #9AA0A6; margin-top: 8px; }
+  .meal-src { font-size: 11px; color: #BDC1C6; text-align: right; margin-top: 4px; }
+
+  /* 바로가기 버튼 */
+  .ext-links { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .ext-btn {
+    display: flex; align-items: center; justify-content: center;
+    gap: 8px; background: white; border: 1.5px solid #E8EAED;
+    border-radius: 18px; padding: 16px 10px;
+    font-size: 17px; font-weight: 700; color: #202124;
+    cursor: pointer; text-decoration: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    transition: background 0.15s, transform 0.1s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .ext-btn:active { background: #F0F4FF; transform: scale(0.97); }
+  .ext-btn .btn-icon { font-size: 24px; }
+
+  /* 일정 */
+  .schedule-card {
+    background: white; border-radius: 22px; padding: 18px 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07); border: 1.5px solid #E8EAED;
+  }
+  .schedule-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .schedule-title { font-size: 15px; color: #5F6368; font-weight: 700; display: flex; align-items: center; gap: 5px; letter-spacing: 0.5px; }
+  .schedule-items { display: flex; flex-direction: column; gap: 9px; }
+  .schedule-item {
+    display: flex; align-items: center; gap: 12px;
+    background: #F8F9FA; border-radius: 14px;
+    padding: 13px 16px; border: 1.5px solid #E8EAED;
+    transition: border-color 0.15s;
+  }
+  .schedule-item:focus-within { border-color: #1a73e8; background: #F0F6FF; }
+  .schedule-num {
+    font-size: 13px; font-weight: 900; color: white;
+    background: #1a73e8; border-radius: 50%;
+    width: 26px; height: 26px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .schedule-text {
+    font-size: 18px; color: #202124; font-weight: 500;
+    flex: 1; border: none; background: transparent;
+    outline: none; font-family: 'Noto Sans KR', sans-serif;
+    caret-color: #1a73e8;
+  }
+  .schedule-text::placeholder { color: #C5C8CD; font-size: 16px; }
+  .del-btn {
+    background: none; border: none; color: #C5C8CD;
+    font-size: 20px; cursor: pointer; padding: 0 2px;
+    border-radius: 6px; line-height: 1;
+    transition: color 0.15s;
+  }
+  .del-btn:active { color: #EA4335; }
+  .add-btn {
+    background: #E8F0FE; color: #1a73e8; border: none;
+    border-radius: 14px; font-size: 26px; cursor: pointer;
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; transition: background 0.15s;
+    font-family: 'Noto Sans KR', sans-serif;
+  }
+  .add-btn:active { background: #d2e3fc; }
+
+  .empty-schedule {
+    text-align: center; padding: 18px 0;
+    font-size: 15px; color: #BDC1C6; font-weight: 500;
+  }
+
+  /* 로딩 텍스트 */
+  .loading { font-size: 14px; color: #9AA0A6; padding: 6px 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <div class="school-name">🏫 대전해든학교</div>
+    <div class="class-name">🩷 고등학교 1학년 2반 🌞</div>
+  </div>
+
+  <div id="greeting" class="greeting-badge">좋은 아침이에요 😊 &nbsp; 🩷 고등학교 1학년 2반</div>
+
+  <div class="grid-top">
+    <div class="card">
+      <div class="card-label" style="font-size:24px;">📅 오늘 날짜</div>
+      <div class="date-text" id="date-text">—</div>
+      <div class="day-text" id="day-text">—</div>
+    </div>
+    <div class="card" style="display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;">
+      <div class="card-label" style="justify-content:center;font-size:24px;">🕐 현재 시간</div>
+      <div class="time-text" id="time-text">--:--<span class="time-sec" id="time-sec">:--</span></div>
+    </div>
+    <div class="schedule-card" style="margin:0;">
+      <div class="schedule-header">
+        <div class="schedule-title" style="font-size:24px;">📋 오늘의 일정</div>
+        <button class="add-btn" onclick="addSchedule()">+</button>
+      </div>
+      <div class="schedule-items" id="schedule-list">
+        <div class="empty-schedule">+ 버튼을 눌러 오늘의 일정을 추가하세요</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="weather-dust-card">
+    <div class="card-label" style="font-size:18px;">🌤 날씨 &amp; 미세먼지 — 대전</div>
+    <div class="weather-row" id="weather-row">
+      <div class="loading">날씨 정보 불러오는 중...</div>
+    </div>
+    <div class="dust-row" id="dust-row" style="display:none;"></div>
+    <div class="weather-src" id="weather-src"></div>
+  </div>
+
+  <div class="meal-card">
+    <div class="card-label">🍱 오늘 급식 — 대전해든학교</div>
+    <div id="meal-content"><div class="loading">급식 정보 불러오는 중...</div></div>
+    <div class="meal-src" id="meal-src"></div>
+  </div>
+
+  <div class="ext-links">
+    <a class="ext-btn" href="https://www.weather.go.kr/w/weather/forecast/short-term.do" target="_blank">
+      <span class="btn-icon">🌦</span> 기상청 날씨
+    </a>
+    <a class="ext-btn" href="https://weather.naver.com/today/29110000" target="_blank">
+      <span class="btn-icon">🗺</span> 네이버 날씨
+    </a>
+  </div>
+
+
+
+<script>
+/* ── 시계 ── */
+const DAYS = ['일','월','화','수','목','금','토'];
+const MONTHS = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+
+function updateClock() {
+  const now = new Date();
+  document.getElementById('date-text').textContent =
+    now.getFullYear() + '년 ' + MONTHS[now.getMonth()] + ' ' + now.getDate() + '일';
+  document.getElementById('day-text').textContent = DAYS[now.getDay()] + '요일';
+  const h = String(now.getHours()).padStart(2,'0');
+  const m = String(now.getMinutes()).padStart(2,'0');
+  const s = String(now.getSeconds()).padStart(2,'0');
+  document.getElementById('time-text').innerHTML =
+    h + ':' + m + '<span class="time-sec" style="font-size:24px;color:#9AA0A6;font-weight:400;">:' + s + '</span>';
+  const hr = now.getHours();
+  let g = '좋은 아침이에요 😊';
+  if (hr >= 12 && hr < 18) g = '좋은 오후예요 ☀️';
+  else if (hr >= 18) g = '좋은 저녁이에요 🌙';
+  document.getElementById('greeting').textContent = g + '  🩷 고등학교 1학년 2반';
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+/* ── 날씨 (wttr.in 무료) ── */
+const WX_ICON = {'Sunny':'☀️','Clear':'🌙','Partly cloudy':'⛅','Cloudy':'☁️','Overcast':'☁️','Mist':'🌫','Patchy rain possible':'🌦','Light rain':'🌧','Moderate rain':'🌧','Heavy rain':'⛈','Light snow':'🌨','Moderate snow':'❄️','Heavy snow':'❄️','Thundery outbreaks possible':'⛈','Blizzard':'🌨','Fog':'🌫'};
+const WX_KR  = {'Sunny':'맑음','Clear':'맑음','Partly cloudy':'구름 조금','Cloudy':'흐림','Overcast':'흐림','Mist':'안개','Patchy rain possible':'비 올 수 있음','Light rain':'가벼운 비','Moderate rain':'비','Heavy rain':'강한 비','Light snow':'가벼운 눈','Moderate snow':'눈','Heavy snow':'강한 눈','Thundery outbreaks possible':'천둥번개','Blizzard':'눈보라','Fog':'짙은 안개'};
+
+async function loadWeather() {
+  try {
+    const res = await fetch('https://wttr.in/Daejeon?format=j1');
+    const data = await res.json();
+    const cur = data.current_condition[0];
+    const desc = cur.weatherDesc[0].value;
+    document.getElementById('weather-row').innerHTML = `
+      <div class="weather-icon">${WX_ICON[desc] || '🌤'}</div>
+      <div>
+        <div class="weather-temp">${cur.temp_C}°C</div>
+        <div class="weather-desc">${WX_KR[desc] || desc}</div>
+        <div class="weather-sub">체감 ${cur.FeelsLikeC}°C &nbsp;·&nbsp; 습도 ${cur.humidity}%</div>
+      </div>`;
+    document.getElementById('weather-src').textContent = 'wttr.in 제공 · 대전';
+  } catch(e) {
+    document.getElementById('weather-row').innerHTML =
+      '<div class="loading">날씨 정보를 가져올 수 없습니다.</div>';
+  }
+  loadDust();
+}
+
+/* ── 미세먼지 (WAQI 무료 demo 토큰) ── */
+async function loadDust() {
+  try {
+    const res = await fetch('https://api.waqi.info/feed/daejeon/?token=demo');
+    const data = await res.json();
+    if (data.status !== 'ok') return;
+    const aqi  = data.data.aqi;
+    const pm25 = data.data.iaqi?.pm25?.v ?? '—';
+    const pm10 = data.data.iaqi?.pm10?.v ?? '—';
+    let st, cls;
+    if (aqi <= 50)       { st='좋음';     cls='good';  }
+    else if (aqi <= 100) { st='보통';     cls='normal';}
+    else if (aqi <= 150) { st='나쁨';     cls='bad';   }
+    else                 { st='매우 나쁨'; cls='vbad';  }
+    const row = document.getElementById('dust-row');
+    row.style.display = 'flex';
+    row.innerHTML = `
+      <div class="dust-box bg-${cls}" style="flex:1.2">
+        <div class="dust-box-label">대기질 AQI</div>
+        <div class="dust-box-val c-${cls}">${aqi}</div>
+        <div class="dust-box-status c-${cls}">${st}</div>
+      </div>
+      <div class="dust-box bg-${cls}">
+        <div class="dust-box-label">PM2.5</div>
+        <div class="dust-box-val c-${cls}">${pm25}</div>
+        <div class="dust-box-unit">㎍/㎥</div>
+      </div>
+      <div class="dust-box bg-${cls}">
+        <div class="dust-box-label">PM10</div>
+        <div class="dust-box-val c-${cls}">${pm10}</div>
+        <div class="dust-box-unit">㎍/㎥</div>
+      </div>`;
+  } catch(e) {}
+}
+
+/* ── 급식 (NEIS 공공데이터, 학교명 자동 검색) ── */
+async function loadMeal() {
+  const mealEl = document.getElementById('meal-content');
+  const srcEl  = document.getElementById('meal-src');
+  mealEl.innerHTML = '<div class="loading">급식 정보 불러오는 중...</div>';
+
+  const now = new Date();
+  const ymd = now.getFullYear()
+    + String(now.getMonth()+1).padStart(2,'0')
+    + String(now.getDate()).padStart(2,'0');
+
+  try {
+    // 1단계: 학교명으로 교육청코드 + 학교코드 자동 검색
+    const schoolUrl = `https://open.neis.go.kr/hub/schoolInfo?Type=json&pindex=1&psize=5&SCHUL_NM=%EB%8C%80%EC%A0%84%ED%95%B4%EB%93%A0%ED%95%99%EA%B5%90`;
+    const schoolRes  = await fetch(schoolUrl);
+    const schoolData = await schoolRes.json();
+    const schoolRow  = schoolData.schoolInfo?.[1]?.row?.[0];
+
+    if (!schoolRow) throw new Error('학교 정보 없음');
+
+    const atpt = schoolRow.ATPT_OFCDC_SC_CODE;
+    const code = schoolRow.SD_SCHUL_CODE;
+
+    // 2단계: 급식 조회
+    const mealUrl = `https://open.neis.go.kr/hub/mealServiceDietInfo?Type=json&pindex=1&psize=1`
+                  + `&ATPT_OFCDC_SC_CODE=${atpt}&SD_SCHUL_CODE=${code}`
+                  + `&MLSV_YMD=${ymd}&MMEAL_SC_CODE=2`;
+    const mealRes  = await fetch(mealUrl);
+    const mealData = await mealRes.json();
+    const rows     = mealData.mealServiceDietInfo?.[1]?.row;
+
+    if (rows && rows.length > 0) {
+      const cal  = rows[0].CAL_INFO || '';
+      const menu = rows[0].DDISH_NM
+        .replace(/<br\/>/g,'|').split('|')
+        .map(s => s.replace(/\([\d.]+\)/g,'').trim())
+        .filter(Boolean);
+      mealEl.innerHTML =
+        '<ul class="meal-list">' + menu.map(m => `<li>🥗 ${m}</li>`).join('') + '</ul>'
+        + (cal ? `<div class="meal-cal">🔥 열량: ${cal}</div>` : '');
+      srcEl.textContent = '출처: NEIS 학교급식 공공데이터 · ' + schoolRow.SCHUL_NM;
+    } else {
+      mealEl.innerHTML = '<div style="font-size:16px;color:#9AA0A6;padding:10px 0;">오늘 급식 정보가 없습니다 🍽</div>';
+      srcEl.textContent = '';
+    }
+  } catch(e) {
+    mealEl.innerHTML = '<div class="loading">급식 정보를 불러올 수 없습니다.<br><span style="font-size:12px;color:#BDC1C6;">인터넷 연결을 확인해 주세요.</span></div>';
+    srcEl.textContent = '';
+  }
+}
+
+/* ── 일정 (localStorage 저장) ── */
+let schedules = [];
+try { schedules = JSON.parse(localStorage.getItem('hdn_schedules') || '[]'); } catch(e) {}
+
+function saveSchedules() {
+  try { localStorage.setItem('hdn_schedules', JSON.stringify(schedules)); } catch(e) {}
+}
+
+function renderSchedules() {
+  const el = document.getElementById('schedule-list');
+  if (!schedules.length) {
+    el.innerHTML = '<div class="empty-schedule">+ 버튼을 눌러 오늘의 일정을 추가하세요</div>';
+    return;
+  }
+  el.innerHTML = schedules.map((s, i) => `
+    <div class="schedule-item">
+      <div class="schedule-num">${i + 1}</div>
+      <input class="schedule-text"
+        placeholder="일정 내용을 입력하세요"
+        value="${s.text.replace(/"/g, '&quot;')}"
+        oninput="schedules[${i}].text=this.value;saveSchedules();" />
+      <button class="del-btn" onclick="schedules.splice(${i},1);saveSchedules();renderSchedules();">✕</button>
+    </div>`).join('');
+}
+
+function addSchedule() {
+  schedules.push({ text: '' });
+  saveSchedules();
+  renderSchedules();
+  const inputs = document.querySelectorAll('.schedule-text');
+  if (inputs.length) inputs[inputs.length - 1].focus();
+}
+
+/* ── 시작 ── */
+renderSchedules();
+loadWeather();
+loadMeal();
+</script>
+</div>
+</body>
+</html>
